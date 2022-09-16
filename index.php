@@ -74,8 +74,8 @@ session_start();
     <h2> TABELA WYNIKÓW </h2>
     <div class="tabela">
     <?php
-        //$conn = mysqli_connect("127.0.0.1", "root", "", "pubg");
-        $conn = mysqli_connect("127.0.0.1", "36127812_pubg", "pubgpubg123", "36127812_pubg");
+        $conn = mysqli_connect("127.0.0.1", "root", "", "pubg");
+        //$conn = mysqli_connect("127.0.0.1", "36127812_pubg", "pubgpubg123", "36127812_pubg");
         if(isset($_POST['nick'])){
             $nick = $_POST['nick'];
             $pkt = $_POST['punkty'];
