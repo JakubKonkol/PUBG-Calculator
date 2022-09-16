@@ -74,7 +74,8 @@ session_start();
     <h2> TABELA WYNIKÓW </h2>
     <div class="tabela">
     <?php
-        $conn = mysqli_connect("127.0.0.1", "root", "", "pubg");
+        //$conn = mysqli_connect("127.0.0.1", "root", "", "pubg");
+        $conn = mysqli_connect("127.0.0.1", "36127812_pubg", "pubgpubg123", "36127812_pubg");
         if(isset($_POST['nick'])){
             $nick = $_POST['nick'];
             $pkt = $_POST['punkty'];
@@ -88,14 +89,21 @@ session_start();
         while ($r = mysqli_fetch_assoc($res)) {
             echo "<div class='user'>";
             $total_points_query = mysqli_query($conn, "SELECT SUM(pkt) FROM wyniki WHERE nick = '$r[nick]'");
+            $avg_query = mysqli_query($conn, "SELECT COUNT(pkt) FROM wyniki WHERE nick='$r[nick]'");
             while ($r3 = mysqli_fetch_row($total_points_query)){
-                $total_points = $r3[0];
+                $total_points = round($r3[0],2);
+            }
+            while($r4 = mysqli_fetch_row($avg_query)){
+                $avg_points = $total_points/$r4[0];
+                $avg_points = round($avg_points, 2);
             }
             $select_points = "SELECT pkt FROM wyniki WHERE nick = '$r[nick]'";
             $res2 = mysqli_query($conn, $select_points);
-            echo "$r[nick] - total:$total_points <br>";
+            echo "<p class='nickname'> $r[nick] - total: $total_points </p>  <p class='nickname'> avg: $avg_points pkt</p> <br>";
+            $mecznr= 1;
             while ($r2 = mysqli_fetch_assoc($res2)){
-                echo "$r2[pkt]<br>";
+                echo " $mecznr. $r2[pkt] pkt. <br>";
+                $mecznr =$mecznr+1;
                 $total_points = $total_points + $r2['pkt'];
             }echo "</div>";
         }
