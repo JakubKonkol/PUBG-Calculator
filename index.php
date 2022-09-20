@@ -65,19 +65,43 @@ session_start();
 </div>
 <div class="right">
     <h2 id="total"> Total:  </h2>
-    <form method="post" action="index.php">
-        <input type="hidden" value="0" name="punkty" id="punktyphp">
-        <label for="nick"> Nickname:</label>
-        <input type="text" name="nick">
-        <input type="submit" value="Pompa">
+    <?php
+    if(isset($_COOKIE['player'])){
+        echo "
+        <form method='post' action='index.php'>
+        <input type='hidden' value='0' name='punkty' id='punktyphp'>
+        <label for='nick'> Nickname:</label>
+        <input type='text' name='nick' value='$_COOKIE[player]' disabled>
+        <input type='submit' value='Pompa'>
     </form>
+        ";
+    }else{
+        echo "
+        <form method='post' action='index.php'>
+        <input type='hidden' value='0' name='punkty' id='punktyphp'>
+        <label for='nick'> Nickname:</label>
+        <input type='text' required name='nick'>
+        <input type='submit' value='Pompa'>
+    </form>
+        ";
+    }
+    ?>
+
     <h2> TABELA WYNIKÓW </h2>
     <div class="tabela">
     <?php
         $conn = mysqli_connect("127.0.0.1", "root", "", "pubg");
         //$conn = mysqli_connect("127.0.0.1", "36127812_pubg", "pubgpubg123", "36127812_pubg");
-        if(isset($_POST['nick'])){
+        if(isset($_POST['nick']) && !isset($_COOKIE['player'])){
             $nick = $_POST['nick'];
+            $pkt = $_POST['punkty'];
+            setcookie('player', $nick);
+            $insert_query = "INSERT INTO wyniki (nick, pkt) VALUES ('$nick', $pkt)";
+            $conn->query($insert_query);
+            header("Location: index.php");
+        }
+        if(isset($_COOKIE['player']) && isset($_POST['punkty'])){
+            $nick = $_COOKIE['player'];
             $pkt = $_POST['punkty'];
             $insert_query = "INSERT INTO wyniki (nick, pkt) VALUES ('$nick', $pkt)";
             $conn->query($insert_query);
@@ -102,7 +126,7 @@ session_start();
             echo "<p class='nickname'> $r[nick] - total: $total_points </p>  <p class='nickname'> avg: $avg_points pkt</p> <br>";
             $mecznr= 1;
             while ($r2 = mysqli_fetch_assoc($res2)){
-                echo " $mecznr. $r2[pkt] pkt. <br>";
+                echo "$mecznr. $r2[pkt] pkt. <br>";
                 $mecznr =$mecznr+1;
                 $total_points = $total_points + $r2['pkt'];
             }echo "</div>";
